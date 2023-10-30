@@ -14,12 +14,12 @@ def test_create_customer__creates_customer_with_one_stamp():
 
 def test_count_stamps_by_customer__non_existent_customer():
   coffee_shop = coffee.CoffeeShop()
-  with pytest.raises(KeyError):
+  with pytest.raises(coffee.NoSuchCustomerError):
     coffee_shop.count_stamps_by_customer("foo")
 
 def test_create_stamp_by_customer__non_existent_customer():
   coffee_shop = coffee.CoffeeShop()
-  with pytest.raises(KeyError):
+  with pytest.raises(coffee.NoSuchCustomerError):
     coffee_shop.create_stamp_by_customer("foo")
 
 def test_redeem_free_coffee_for_customer():

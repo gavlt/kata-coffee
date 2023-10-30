@@ -10,6 +10,11 @@ The Rules:
      and 4 methods.
    - Method bodies have a maximum of 3 lines of code, no tricky code
      to get around this.
+
+The Twist:
+ - Having created the coffee shop stamp system we now want to add expiry to the stamps
+ - After 30 days they should be expired if they have not already been used to redeem a coffee
+ - When redeeming a coffee, we should use the oldest unexpired stamps first
 """
 
 from typing import Dict
@@ -18,6 +23,9 @@ class NotEnoughStampsError(Exception):
   pass
 
 class CustomerAlreadyExistsError(Exception):
+  pass
+
+class NoSuchCustomerError(Exception):
   pass
 
 class CoffeeShop:
@@ -32,9 +40,13 @@ class CoffeeShop:
     self.customer_stamps[id] = 0
 
   def create_stamp_by_customer(self, id: str) -> None:
+    if id not in self.customer_stamps:
+      raise NoSuchCustomerError()
     self.customer_stamps[id] += 1
 
   def count_stamps_by_customer(self, id: str) -> int:
+    if id not in self.customer_stamps:
+        raise NoSuchCustomerError()
     return self.customer_stamps[id]
 
   def redeem_free_coffee_for_customer(self, id: str) -> None:
