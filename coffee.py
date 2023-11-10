@@ -10,11 +10,6 @@ The Rules:
      and 4 methods.
    - Method bodies have a maximum of 3 lines of code, no tricky code
      to get around this.
-
-The Twist:
- - Having created the coffee shop stamp system we now want to add expiry to the stamps
- - After 30 days they should be expired if they have not already been used to redeem a coffee
- - When redeeming a coffee, we should use the oldest unexpired stamps first
 """
 
 from typing import Dict
