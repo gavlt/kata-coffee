@@ -61,3 +61,13 @@ def test_redeem_free_coffee_for_customer_with_expiry():
   assert coffee_shop.count_stamps_by_customer("foo", date=datetime.date(2023, 1, 1)) == 6
   assert coffee_shop.count_stamps_by_customer("foo", date=datetime.date(2023, 1, 30)) == 6
   assert coffee_shop.count_stamps_by_customer("foo", date=datetime.date(2023, 2, 1)) == 0
+
+def test_redeem_free_coffee_redeem_correct_stamps_with_expiry():
+  coffee_shop = coffee.CoffeeShop()
+  coffee_shop.create_customer("foo")
+  for _ in range(2):
+    coffee_shop.create_stamp_by_customer("foo", date=datetime.date(2023, 1, 1))
+  for _ in range(6):
+    coffee_shop.create_stamp_by_customer("foo", date=datetime.date(2023, 2, 1))
+  coffee_shop.redeem_free_coffee_for_customer("foo", date=datetime.date(2023, 2, 2))
+  assert coffee_shop.count_stamps_by_customer("foo", date=datetime.date(2023, 2, 2)) == 0
