@@ -11,8 +11,9 @@ The Rules:
    - Method bodies have a maximum of 3 lines of code, no tricky code
      to get around this.
 """
+from typing import Dict, List
+import datetime
 
-from typing import Dict
 
 class NotEnoughStampsError(Exception):
   pass
@@ -24,7 +25,7 @@ class NoSuchCustomerError(Exception):
   pass
 
 class CoffeeShop:
-  customer_stamps: Dict[str, int]
+  customer_stamps: Dict[str, List[datetime.date]]
 
   def __init__(self):
     self.customer_stamps = {}
@@ -32,19 +33,21 @@ class CoffeeShop:
   def create_customer(self, id: str) -> None:
     if id in self.customer_stamps:
       raise CustomerAlreadyExistsError()
-    self.customer_stamps[id] = 0
+    self.customer_stamps[id] = []
 
-  def create_stamp_by_customer(self, id: str) -> None:
+  def _check_for_customer(self, id: str):
     if id not in self.customer_stamps:
       raise NoSuchCustomerError()
-    self.customer_stamps[id] += 1
 
-  def count_stamps_by_customer(self, id: str) -> int:
-    if id not in self.customer_stamps:
-        raise NoSuchCustomerError()
-    return self.customer_stamps[id]
+  def create_stamp_by_customer(self, id: str, date: datetime.date = datetime.date.today()) -> None:
+    self._check_for_customer(id)
+    self.customer_stamps[id].append(date)
 
-  def redeem_free_coffee_for_customer(self, id: str) -> None:
-    if self.customer_stamps[id] < 6:
+  def count_stamps_by_customer(self, id: str, date: datetime.date = datetime.date.today()) -> int:
+    self._check_for_customer(id)
+    return sum(1 for stamp in self.customer_stamps[id] if stamp >= date - datetime.timedelta(days=30))
+
+  def redeem_free_coffee_for_customer(self, id: str, date: datetime.date = datetime.date.today()) -> None:
+    if self.count_stamps_by_customer(id, date) < 6:
       raise NotEnoughStampsError()
-    self.customer_stamps[id] -= 6
+    del self.customer_stamps[id][:6]
