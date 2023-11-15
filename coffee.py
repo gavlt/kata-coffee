@@ -11,7 +11,7 @@ The Rules:
    - Method bodies have a maximum of 3 lines of code, no tricky code
      to get around this.
 """
-from typing import Dict, List
+from typing import Dict, List, Iterator
 import datetime
 
 
@@ -43,11 +43,16 @@ class CoffeeShop:
     self._check_for_customer(id)
     self.customer_stamps[id].append(date)
 
+  def _valid_stamps(self, id: str, date: datetime.date = datetime.date.today()) -> Iterator[datetime.date]:
+    for stamp in self.customer_stamps[id]:
+      if stamp >= date - datetime.timedelta(days=30):
+        yield stamp
+
   def count_stamps_by_customer(self, id: str, date: datetime.date = datetime.date.today()) -> int:
     self._check_for_customer(id)
-    return sum(1 for stamp in self.customer_stamps[id] if stamp >= date - datetime.timedelta(days=30))
+    return sum(1 for _ in self._valid_stamps(id, date))
 
   def redeem_free_coffee_for_customer(self, id: str, date: datetime.date = datetime.date.today()) -> None:
     if self.count_stamps_by_customer(id, date) < 6:
       raise NotEnoughStampsError()
-    del self.customer_stamps[id][:6]
+    self.customer_stamps[id] = list(self._valid_stamps(id, date))[6:]
